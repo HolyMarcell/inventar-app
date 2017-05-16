@@ -235,12 +235,13 @@ export default class CateringComponent extends Component {
       )
       for(var key in positions) {
         const pid = positions[key].id;
+        const item = positionUnits[positions[key].unit];
 
         if(selectedItems.filter((el) => { return el.id == pid }).length == 0) {
           rows.push(
             <Picker.Item
               key={pid}
-              label={positions[key].name}
+              label={positions[key].name + ' | ' + item}
               value={pid}
               style={styles.inputmodalpickeritem}
               />

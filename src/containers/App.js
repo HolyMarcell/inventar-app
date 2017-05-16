@@ -12,11 +12,14 @@ import Inventar from './Inventar';
 import Inventur from './Inventur';
 import Catering from './Catering';
 
+// -- MS Code push
+import codePush from 'react-native-code-push';
+
 const SCENES = Actions.create(
   <Scene key="root">
+    <Scene key="home" component={Home} title="Home"></Scene>
     <Scene key="inventar" component={Inventar} title="Inventar"></Scene>
     <Scene key="catering" component={Catering} title="Catering"></Scene>
-    <Scene key="home" component={Home} title="Home"></Scene>
     <Scene key="tasks" component={Tasks} title="Tasks"></Scene>
     <Scene key="inventur" component={Inventur} title="Inventur"></Scene>
   </Scene>
@@ -26,7 +29,7 @@ const SCENES = Actions.create(
   state => state,
   dispatch => ({ dispatch })
 )
-export default class App extends Component {
+class App extends Component {
 
   render() {
     return (
@@ -34,3 +37,7 @@ export default class App extends Component {
     );
   }
 }
+
+App = codePush(App);
+
+export default App;

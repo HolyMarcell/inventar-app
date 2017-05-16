@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
     backgroundColor: elementbg,
     height: 50,
     justifyContent: 'center',
+    alignItems: 'center',
     paddingLeft: 5,
     borderRightWidth: 2,
     borderColor: inputbordercolor,

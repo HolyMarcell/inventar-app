@@ -15,6 +15,7 @@ export default class InventurComponent extends Component {
     increaseQuantity: PropTypes.func.isRequired,
     decreaseQuantity: PropTypes.func.isRequired,
     inventar: PropTypes.object.isRequired,
+    setQuantity: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -22,6 +23,10 @@ export default class InventurComponent extends Component {
     this.state = {
         filter: -1,
         filterFormOpen: false,
+        largeAddFormOpen: false,
+        largeAddFormPosition: null,
+        largeAddFormPositionLocation: null,
+        largeAddFormAmount: 0,
     }
   }
 
@@ -80,29 +85,103 @@ export default class InventurComponent extends Component {
     return positions.map((position) => {
       return(
         <View key={position.id}  style={styles.td6row}>
-          <View style={styles.th6}>
+          <View style={[styles.th6, styles.td6rowBB]}>
             <Text style={[styles.th6text, styles.textleft]}>{position.name}</Text>
             <Text style={[styles.th6text, styles.textleft]}>{positionUnits[position.unit]}</Text>
           </View>
           <View style={styles.td6}>
             {this.decreaseQuantityForm(position, 1)}
-            <Text style={styles.td6text}>{amount(position, 1)}</Text>
+
+            <TouchableOpacity style={styles.td6text} onLongPress={() =>this.openLargeAddForm(position, 1)}>
+              <Text>{amount(position, 1)}</Text>
+            </TouchableOpacity>
+
             {this.increaseQuantityForm(position, 1)}
           </View>
           <View style={styles.td6}>
             {this.decreaseQuantityForm(position, 2)}
-            <Text style={styles.td6text}>{amount(position, 2)}</Text>
+            <TouchableOpacity style={styles.td6text} onLongPress={() =>this.openLargeAddForm(position, 2)}>
+              <Text>{amount(position, 2)}</Text>
+            </TouchableOpacity>
             {this.increaseQuantityForm(position, 2)}
           </View>
           <View style={styles.td6}>
             {this.decreaseQuantityForm(position, 3)}
-            <Text style={styles.td6text}>{amount(position, 3)}</Text>
+            <TouchableOpacity style={styles.td6text} onLongPress={() =>this.openLargeAddForm(position, 3)}>
+              <Text>{amount(position, 3)}</Text>
+            </TouchableOpacity>
             {this.increaseQuantityForm(position, 3)}
           </View>
         </View>
       );
     });
 
+  }
+
+
+  largeAddForm() {
+
+    const setItems = () => {
+
+      const set = [10,20,50,100,150,200,300,400,500,600];
+
+      let rows = [];
+      for(var key of set) {
+        rows.push(
+          <Picker.Item
+            key={key}
+            label={'' + key}
+            value={key}
+            style={styles.inputmodalpickeritem}
+            />
+        );
+      }
+      return rows;
+    }
+
+    return (
+      <Modal visible={this.state.largeAddFormOpen}>
+          <View style={styles.inputmodalroot} onPress={() => this.closeLargeAddForm()}>
+            <View style={styles.inputmodalrow}>
+              <Text style={styles.inputmodalhead}>Set To Amount</Text>
+            </View>
+
+            <View style={styles.inputmodalrow}>
+              <Picker
+                style={styles.inputmodalpicker}
+                selectedValue={this.state.largeAddFormAmount}
+                onValueChange={(key) => this._onChangeLargeAdd(key)}
+                >
+                {setItems()}
+              </Picker>
+            </View>
+
+            <View style={styles.inputmodalrow}>
+              <TouchableHighlight style={styles.inputmodalcancel} onPress={() => this.closeLargeAddForm()}>
+                <View>
+                  <Text>Cancel</Text>
+                </View>
+              </TouchableHighlight>
+              <TouchableHighlight style={styles.inputmodalsave} onPress={() => this.saveFixedAmount()}>
+                <View>
+                  <Text>Save</Text>
+                </View>
+              </TouchableHighlight>
+            </View>
+          </View>
+      </Modal>
+    )
+  }
+
+  saveFixedAmount() {
+
+    this.props.setQuantity(
+      this.state.largeAddFormPosition,
+      this.state.largeAddFormPositionLocation,
+      this.state.largeAddFormAmount
+    );
+
+    this.closeLargeAddForm();
   }
 
   filterForm() {
@@ -159,8 +238,18 @@ export default class InventurComponent extends Component {
     this.setState({filterFormOpen: true});
   }
 
+  openLargeAddForm(position, location) {
+    this.setState({largeAddFormPosition: position});
+    this.setState({largeAddFormPositionLocation: location});
+    this.setState({largeAddFormOpen: true});
+  }
+
   _onChangeFilter(key) {
     this.setState({filter: key});
+  }
+
+  _onChangeLargeAdd(key) {
+    this.setState({largeAddFormAmount: key});
   }
 
   saveFilter() {
@@ -205,6 +294,14 @@ export default class InventurComponent extends Component {
     this.setState({formName: text});
   }
 
+  closeForm() {
+    this.setState({filterFormOpen: false});
+  }
+
+  closeLargeAddForm() {
+    this.setState({largeAddFormOpen: false});
+  }
+
 
   render() {
     //const { addTask, removeTaks, tasks } = this.props;
@@ -213,6 +310,7 @@ export default class InventurComponent extends Component {
       <ScrollView style={styles.tasksscrollview}>
         {this.titleStats()}
         {this.filterForm()}
+        {this.largeAddForm()}
 
           {this.listInventarItems()}
           <DropdownAlert

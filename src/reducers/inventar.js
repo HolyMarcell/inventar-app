@@ -51,6 +51,23 @@ const actionsMap = {
     }
 
     return { ...state, positions: poss};
+  },
+
+  setQuantity(state, action) {
+    console.log(action);
+    const poss = [].concat(state.positions);
+    for(var position of poss) {
+      if(position.id == action.payload.position.id) {
+        for(var amount of position.amount) {
+          if(amount.location == action.payload.location) {
+            amount.amount = action.payload.amount;
+          }
+        }
+      }
+
+    }
+
+    return { ...state, positions: poss};
   }
 
 

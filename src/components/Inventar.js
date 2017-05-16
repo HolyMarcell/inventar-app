@@ -88,15 +88,13 @@ export default class InventarComponent extends Component {
            key={position.id}
           left={swipeButtons}
           style={styles.taskswipe}>
-          <View  style={[styles.lirow]}>
-            <View style={styles.lirowitem}>
-              <Text style={[styles.lirowtext]}>{position.name} | {positionUnits[position.unit]}</Text>
-            </View>
-          </View>
           <View style={[styles.td6row, styles.lirowBB]}>
-            <View style={styles.th6}>
-              <Text style={[styles.td6text, styles.textleft]}>Total / Res.: {sumtotal} / {reserved} </Text>
-              <Text style={[styles.td6text, styles.textleft]}> </Text>
+            <View style={styles.td6}>
+              <Text style={[styles.td6text]}>{position.name} | {positionUnits[position.unit]}</Text>
+            </View>
+            <View style={styles.td6}>
+              <Text style={[styles.th6text, styles.textleft]}>Total: {sumtotal}</Text>
+              <Text style={[styles.td6text, styles.textleft]}>Reserved: {reserved} </Text>
             </View>
           </View>
         </Swipeout>
