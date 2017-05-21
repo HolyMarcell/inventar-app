@@ -14,6 +14,63 @@ const actionsMap = {
     return { ...state, clients: state.clients.concat([newClient])};
   },
 
+
+
+  finnishClientItem(state, action) {
+    const {client, item, row, source} = action.payload;
+    let clients = [].concat(state.clients);
+
+
+    client.items.map((element) => {
+      if(element.id == item.id) {
+        if(row == 'backstage') {
+          element.f_backstage = true;
+        }
+
+        if(row == 'stage') {
+          element.f_stage = true;
+        }
+      }
+    });
+
+    clients.map((element) => {
+      if(element.id == client.id) {
+        element = client;
+      }
+    });
+
+    return { ...state, clients: clients};
+  },
+
+  unFinnishClientItem(state, action) {
+    const {client, item, row, source} = action.payload;
+    let clients = [].concat(state.clients);
+
+
+    client.items.map((element) => {
+      if(element.id == item.id) {
+        if(row == 'backstage') {
+          element.f_backstage = false;
+        }
+
+        if(row == 'stage') {
+          element.f_stage = false;
+        }
+      }
+    });
+
+    clients.map((element) => {
+      if(element.id == client.id) {
+        element = client;
+      }
+    });
+
+    return { ...state, clients: clients};
+  },
+
+
+
+
   removeClient(state, action) {
     return { ...state, clients: state.clients.filter(
       (ele) => {return ele.id != action.payload.id})

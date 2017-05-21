@@ -267,7 +267,20 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     marginTop: -10
+  },
+
+  foobtn: {
+    padding: 10,
+    flex: 1,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'red',
+  },
+
+  foobtnactive: {
+    borderColor: 'green',
   }
+
 });
 
 

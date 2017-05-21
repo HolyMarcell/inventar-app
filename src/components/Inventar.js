@@ -55,8 +55,13 @@ export default class InventarComponent extends Component {
   }
 
   listInventarItems(){
+    let positions = this.props.inventar.positions;
 
-    return this.props.inventar.positions.map((position) => {
+    positions.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+
+    return positions.map((position) => {
       const swipeButtons = [
         {
           text: 'Delete',
@@ -77,7 +82,7 @@ export default class InventarComponent extends Component {
           }));
 
           if(unit.length > 0) {
-            return val + unit[0].amount.needs;
+            return val + unit[0].amount.stage + unit[0].amount.backstage;
           }
           return val;
       }, 0);
@@ -93,7 +98,7 @@ export default class InventarComponent extends Component {
               <Text style={[styles.td6text]}>{position.name} | {positionUnits[position.unit]}</Text>
             </View>
             <View style={styles.td6}>
-              <Text style={[styles.th6text, styles.textleft]}>Total: {sumtotal}</Text>
+              <Text style={[styles.th6text, styles.textleft]}> Total: {sumtotal}</Text>
               <Text style={[styles.td6text, styles.textleft]}>Reserved: {reserved} </Text>
             </View>
           </View>

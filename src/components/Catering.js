@@ -19,6 +19,7 @@ export default class CateringComponent extends Component {
     catering: PropTypes.object.isRequired,
     increaseClientItem: PropTypes.func.isRequired,
     decreaseClientItem: PropTypes.func.isRequired,
+    finnishClientItem: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -30,6 +31,7 @@ export default class CateringComponent extends Component {
         formName: '',
         client: props.showClient,
         showClient: 1 && props.showClient,
+        source: 1,
     }
   }
 
@@ -125,6 +127,9 @@ export default class CateringComponent extends Component {
   }
 
   increaseItemForm(item, column) {
+    if((column == 'backstage' && item.f_backstage) || (column == 'stage' && item.f_stage)) {
+      return;
+    }
     return (
       <TouchableOpacity
         style={[styles.inventurButton]}
@@ -134,7 +139,52 @@ export default class CateringComponent extends Component {
     );
   }
 
+  finnishClientItemForm(item, column) {
+    if((column == 'backstage' && item.f_backstage) || (column == 'stage' && item.f_stage)) {
+      // unfinnish form
+      return(
+        <TouchableOpacity
+          style={[styles.inventurButton]}
+          onPress={() => this.props.unFinnishClientItem(this.state.client, item, column, this.state.source)}>
+          <Icon name="check" color="green" size={17}/>
+        </TouchableOpacity>
+      )
+    }
+
+    // -- double checking if enough bottles are in store
+
+    const source = this.state.source;
+
+    let availableAmount = 0;
+    this.props.inventar.positions.map((position) => {
+      if(position.id == item.id) {
+        position.amount.map((ammo) => {
+          if(ammo.location == source) {
+            availableAmount = ammo.amount;
+          }
+        })
+      }
+    })
+
+    if(availableAmount < item.amount[column]) {
+      return (
+        <Icon name="check" color="red" size={15}/>
+      )
+    }
+
+    return (
+      <TouchableOpacity
+        style={[styles.inventurButton]}
+        onPress={() => this.props.finnishClientItem(this.state.client, item, column, this.state.source)}>
+        <Icon name="check" size={15}/>
+      </TouchableOpacity>
+    );
+  }
+
   decreaseItemForm(item, column) {
+    if((column == 'backstage' && item.f_backstage) || (column == 'stage' && item.f_stage)) {
+      return;
+    }
     return (
       <TouchableOpacity
         style={[styles.inventurButton]}
@@ -240,7 +290,7 @@ export default class CateringComponent extends Component {
         if(selectedItems.filter((el) => { return el.id == pid }).length == 0) {
           rows.push(
             <Picker.Item
-              key={pid}
+              key={pid+'_'+key}
               label={positions[key].name + ' | ' + item}
               value={pid}
               style={styles.inputmodalpickeritem}
@@ -286,6 +336,12 @@ export default class CateringComponent extends Component {
     )
   }
 
+  changeSource(to) {
+    this.setState({
+      source: to
+    })
+  }
+
   clientDetails() {
     const items = [].concat(this.state.client.items);
 
@@ -296,14 +352,33 @@ export default class CateringComponent extends Component {
     return (
       <View>
         <View  style={[styles.td6row, styles.lirowBB]}>
+          <View style={[styles.td6row]}>
+            <TouchableOpacity
+              style={[styles.foobtn, (this.state.source == 1) && styles.foobtnactive]}
+              onPress={() => this.changeSource(1)}>
+              <Text>Aus: Keller</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.foobtn, (this.state.source == 2) && styles.foobtnactive]}
+              onPress={() => this.changeSource(2)}>
+              <Text>Aus: KW B1</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.foobtn, (this.state.source == 3) && styles.foobtnactive]}
+              onPress={() => this.changeSource(3)}>
+              <Text>Aus: KW Küche</Text>
+              </TouchableOpacity>
+          </View>
+        </View>
+        <View  style={[styles.td6row, styles.lirowBB]}>
           <View style={styles.td6}>
             <Text style={[styles.td6text]}></Text>
           </View>
           <View style={styles.td6}>
-            <Text style={[styles.td6text]}>Braucht</Text>
+            <Text style={[styles.td6text]}>Back</Text>
           </View>
           <View style={styles.td6}>
-            <Text style={[styles.td6text]}>Hat</Text>
+            <Text style={[styles.td6text]}>Stage</Text>
           </View>
         </View>
       {items.map((item) => {
@@ -317,15 +392,19 @@ export default class CateringComponent extends Component {
                 </View>
                 <View style={styles.td6}>
 
-                  {this.decreaseItemForm(item, 'needs')}
-                  <Text style={styles.td6text}>{amount(item, 'needs')}</Text>
-                  {this.increaseItemForm(item, 'needs')}
+                  {this.decreaseItemForm(item, 'stage')}
+                  <Text style={styles.td6text}>{amount(item, 'stage')}</Text>
+                  {this.increaseItemForm(item, 'stage')}
+
+                  {this.finnishClientItemForm(item, 'stage')}
 
                 </View>
                 <View style={styles.td6}>
-                  {this.decreaseItemForm(item, 'has')}
-                  <Text style={styles.td6text}>{amount(item, 'has')}</Text>
-                  {this.increaseItemForm(item, 'has')}
+                  {this.decreaseItemForm(item, 'backstage')}
+                  <Text style={styles.td6text}>{amount(item, 'backstage')}</Text>
+                  {this.increaseItemForm(item, 'backstage')}
+
+                  {this.finnishClientItemForm(item, 'backstage')}
                 </View>
               </View>
             </View>
@@ -357,9 +436,6 @@ export default class CateringComponent extends Component {
         {!this.state.showClient && this.clientForm()}
         {!this.state.showClient && this.listClients()}
 
-          <DropdownAlert
-            ref={(ref) => this.dropdown = ref}
-            />
       </ScrollView>
     );
   }

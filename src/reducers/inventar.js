@@ -21,6 +21,71 @@ const actionsMap = {
     return {...state, positions: newPos };
   },
 
+
+  finnishClientItem(state, action) {
+    const {client, item, row, source} = action.payload;
+
+    let positions = [].concat(state.positions);
+
+    let removeAmount = 0;
+
+    client.items.map((element) => {
+      if(element.id == item.id) {
+        if(row == 'backstage') {
+          removeAmount = element.amount.backstage;
+        }
+
+        if(row == 'stage') {
+          removeAmount = element.amount.stage;
+        }
+      }
+    });
+
+    positions.map((element) => {
+      if(element.id == item.id) {
+          element.amount.map((ammo) => {
+            if(ammo.location == source) {
+              ammo.amount -= removeAmount;
+            }
+          });
+      }
+    })
+    return { ...state, positions: positions};
+  },
+
+
+  unFinnishClientItem(state, action) {
+    const {client, item, row, source} = action.payload;
+
+    let positions = [].concat(state.positions);
+
+    let removeAmount = 0;
+
+    client.items.map((element) => {
+      if(element.id == item.id) {
+        if(row == 'backstage') {
+          removeAmount = element.amount.backstage;
+        }
+
+        if(row == 'stage') {
+          removeAmount = element.amount.stage;
+        }
+      }
+    });
+
+    positions.map((element) => {
+      if(element.id == item.id) {
+          element.amount.map((ammo) => {
+            if(ammo.location == source) {
+              ammo.amount += removeAmount;
+            }
+          });
+      }
+    })
+    return { ...state, positions: positions};
+  },
+
+
   increaseQuantity(state, action) {
     const poss = [].concat(state.positions);
     for(var position of poss) {

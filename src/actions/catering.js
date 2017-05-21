@@ -2,6 +2,8 @@ const CLIENT_ADD = 'addClient';
 const ITEM_ADD = 'addItem';
 const CLIENT_REMOVE = 'removeClient'; // type maps to reducerfunction name
 const EDIT_CLIENT_ITEM = 'editClientItem';
+const FINNISH_CLIENT_ITEM = 'finnishClientItem';
+const UNFINNISH_CLIENT_ITEM = 'unFinnishClientItem';
 
 
 export function addClient(client) {
@@ -25,9 +27,11 @@ export function addItem(client, position) {
     id: position.id,
     name: position.name,
     unit: position.unit,
+    f_backstage: false,
+    f_stage: false,
     amount: {
-      has: 0,
-      needs: 0,
+      backstage: 0,
+      stage: 0,
     }
   }
   return {
@@ -38,11 +42,11 @@ export function addItem(client, position) {
 
 export function increaseClientItem(client, item, column) {
   const newItem = {... item};
-  if(column == 'has') {
-    newItem.amount.has += 1;
+  if(column == 'backstage') {
+    newItem.amount.backstage += 1;
   }
-  if(column == 'needs') {
-    newItem.amount.needs += 1;
+  if(column == 'stage') {
+    newItem.amount.stage += 1;
   }
 
   return {
@@ -52,13 +56,28 @@ export function increaseClientItem(client, item, column) {
 }
 
 
+export function finnishClientItem(client, item, row, source) {
+  return {
+    type: FINNISH_CLIENT_ITEM,
+    payload: {client, item, row, source}
+  };
+}
+
+export function unFinnishClientItem(client, item, row, source) {
+  return {
+    type: UNFINNISH_CLIENT_ITEM,
+    payload: {client, item, row, source}
+  };
+}
+
+
 export function decreaseClientItem(client, item, column) {
   const newItem = {... item};
-  if(column == 'has' && item.amount.has > 0) {
-    newItem.amount.has -= 1;
+  if(column == 'backstage' && item.amount.backstage > 0) {
+    newItem.amount.backstage -= 1;
   }
-  if(column == 'needs' && item.amount.needs > 0) {
-    newItem.amount.needs -= 1;
+  if(column == 'stage' && item.amount.stage > 0) {
+    newItem.amount.stage -= 1;
   }
 
   return {

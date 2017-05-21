@@ -71,13 +71,7 @@ export default class InventurComponent extends Component {
     }
 
     positions.sort((a, b) => {
-      if(a.unit < b.unit) {
-        return -1;
-      }
-      else if (a.unit > b.unit) {
-        return 1;
-      }
-      return 0;
+      return a.name.localeCompare(b.name);
     });
 
 
